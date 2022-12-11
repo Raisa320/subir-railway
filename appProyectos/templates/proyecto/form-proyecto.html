@@ -1,0 +1,181 @@
+{% extends 'proyecto/base.html' %} 
+{% block title %}
+Project - PortafolioAdmin 
+{% endblock title %}
+{% block content %} 
+    {% include 'proyecto/siderbar.html' %} 
+    <main id="main" class="main">
+
+        <div class="pagetitle">
+          <h1>Proyecto</h1>
+          <nav>
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item"><a href="{% url 'home-page' %}">Home</a></li>
+              <li class="breadcrumb-item">Proyectos</li>
+              <li class="breadcrumb-item active">{{ name }}</li>
+            </ol>
+          </nav>
+        </div><!-- End Page Title -->
+    
+        <section class="section">
+          <div class="row">
+            <div class="col-lg-12">
+    
+              <div class="card">
+                <div class="card-body">
+                  <h5 class="card-title">{{ name }} Proyecto</h5>
+                  {% if form.errors %}
+                  <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <h4 class="alert-heading">Por favor corrige los siguientes errores</h4>
+                    <hr>
+                    <ul>
+                      {% for field in form %}
+                        {% if field.errors %}
+                            {% for error in field.errors %}
+                                <p> <i class="bi bi-x-circle-fill"></i> {{ field.label }}: <a href="#id_{{ field.name }}" class="text-danger">{{ error|escape }}</a> </p>
+              
+                            {% endfor %}
+                        {% endif %}
+                      {% endfor %}
+                    </ul>
+                    {% if form.non_field_errors %}
+                    <ul>
+                      {% for error in form.non_field_errors %}
+                      <p> <i class="bi bi-x-circle-fill"></i> {{ error }} </p>
+                      {% endfor %}
+                    </ul>
+                    {% endif %}
+                  </div>
+                  {% endif %}
+                  
+                  <!-- General Form Elements -->
+                  <form method="post" enctype="multipart/form-data" novalidate>
+                    {% csrf_token %}
+                    
+                    <div class="row mb-3">
+                      <label for="titulo" class="col-sm-2 col-form-label">{{ form.title.label }}</label>
+                      <div class="col-sm-10">
+                        {{ form.title }}
+                      </div>
+                    </div>
+                    <div class="row mb-3">
+                      <label for="tags" class="col-sm-2 col-form-label">{{ form.tags.label }}</label>
+                      <div class="col-sm-10">
+                        {{ form.tags }}
+                      </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label for="descripcion" class="col-sm-2 col-form-label">{{ form.descripcion.label }}</label>
+                        <div class="col-sm-10">
+                            {{ form.descripcion }}
+                        </div>
+                    </div>
+                    <div class="row mb-3 ">
+                      <label for="foto" class="col-sm-2 col-form-label">{{ form.foto_url.label }}</label>
+                      <div class="w-50">
+                        <div class="form-check form-check-inline  mb-0">
+                          <input class="form-check-input" type="radio" name="inlineRadioOptions" id="urlImg" value="option1">
+                          <label class="form-check-label" for="inlineRadio1">Subir URL de una imagen</label>
+                        </div>
+                        <div class="form-check form-check-inline mb-0">
+                          <input class="form-check-input" type="radio" name="inlineRadioOptions" id="realImg" value="option2">
+                          <label class="form-check-label" for="inlineRadio2">Cargar una imagen</label>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row mb-3" style="display: none;" id="inputUrlImg">
+                      <label for="url_img" class="col-sm-2 col-form-label">Url Foto</label>
+                      <div class="col-sm-10">
+                        {{ form.foto_url }}
+                      </div>
+                    </div>
+                    <div class="row mb-3" style="display: none;" id="inputFileImg">
+                      <label for="upload_foto" class="col-sm-2 col-form-label">Upload Foto</label>
+                      <div class="col-sm-10">
+                        {{ form.foto_img }}
+                      </div>
+                      <div class="col-sm-10 mt-3 d-flex justify-content-center">
+                        {% if url_img %}
+                          <span>Foto actual: </span><img src="{{ url_img }}" class="img-thumbnail rounded float-start" style="max-width: 220px;" id="imagenPrevisualizacion">
+                        {% else %}
+                          <img class="img-thumbnail rounded float-start" style="max-width: 220px;" id="imagenPrevisualizacion">
+                        {% endif %}
+                      </div>
+                    </div>
+                    <div class="row mb-3">
+                      <label for="git" class="col-sm-2 col-form-label">{{ form.git.label }}</label>
+                      <div class="col-sm-10">
+                        {{ form.git }}
+                      </div>
+                    </div>
+                    <div class="row mb-3">
+                      <div class="col-sm-10 text-center">
+                        <button type="submit" class="btn btn-primary">{{ name }}</button>
+                      </div>
+                    </div>
+    
+                  </form>
+                  <!-- End General Form Elements -->
+    
+                </div>
+              </div>
+    
+            </div>
+          </div>
+        </section>
+    
+      </main><!-- End #main -->
+<script>
+  document.addEventListener("DOMContentLoaded", function(event) {
+    // Your code to run since DOM is loaded and ready
+    var $seleccionArchivos = document.querySelector("#id_foto_img");
+    var $urlValor=document.getElementById("id_foto_url");
+    var $imagenPrevisualizacion = document.querySelector("#imagenPrevisualizacion");
+    var url = document.getElementById('inputUrlImg');
+    var file = document.getElementById('inputFileImg');
+    var archivoF="{{ form.foto_img.value }}"
+    console.log(archivoF)
+  if ($urlValor.value!=""){
+    document.getElementById("urlImg").checked = true;
+    clickUrl()
+  }else if (archivoF!="None" &&  archivoF!=""  ){
+    console.log(archivoF)
+    document.getElementById("realImg").checked = true;
+    clickImg()
+  }
+  document.getElementById("urlImg").onclick = function(){//do something
+    clickUrl()
+  }
+  function clickUrl(){
+    url.style.removeProperty("display");
+    file.style.display="none";
+    $seleccionArchivos.value = "";
+    $imagenPrevisualizacion.src = "";
+  }
+  document.getElementById("realImg").onclick = function(){//do something
+    clickImg()
+  }
+  function clickImg(){
+    file.style.removeProperty("display");
+    url.style.display="none"
+    $urlValor.value = "";
+  }
+// Escuchar cuando cambie
+  $seleccionArchivos.addEventListener("change", () => {
+    // Los archivos seleccionados, pueden ser muchos o uno
+    const archivos = $seleccionArchivos.files;
+    // Si no hay archivos salimos de la función y quitamos la imagen
+    if (!archivos || !archivos.length) {
+      $imagenPrevisualizacion.src = "";
+      return;
+    }
+    // Ahora tomamos el primer archivo, el cual vamos a previsualizar
+    const primerArchivo = archivos[0];
+    // Lo convertimos a un objeto de tipo objectURL
+    const objectURL = URL.createObjectURL(primerArchivo);
+    // Y a la fuente de la imagen le ponemos el objectURL
+    $imagenPrevisualizacion.src = objectURL;
+  });
+});
+</script>
+{% endblock content %}

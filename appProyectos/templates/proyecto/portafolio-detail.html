@@ -1,0 +1,88 @@
+{% extends 'user/base.html' %}
+{% block title %}
+Detail Project - PortafolioAdmin 
+{% endblock title %}
+{% load static %}
+{% block content %}
+<header id="header" class="fixed-top">
+    <div class="container d-flex align-items-center justify-content-between">
+
+      <h1 class="logo"><a href="index.html">DevFolio</a></h1>
+      <!-- Uncomment below if you prefer to use an image logo -->
+      <!-- <a href="index.html" class="logo"><img src="assets/img/logo.png" alt="" class="img-fluid"></a>-->
+
+      <nav id="navbar" class="navbar">
+        <ul>
+          <li><a class="nav-link scrollto " href="{% url 'portafolio' proyecto.autor.id %}">Home</a></li>
+        </ul>
+        <i class="bi bi-list mobile-nav-toggle"></i>
+      </nav><!-- .navbar -->
+
+    </div>
+  </header><!-- End Header -->
+
+  <div class="hero hero-single route bg-image" style="background-image: url({% static 'assets/img/overlay-bg.jpg' %})">
+    <div class="overlay-mf"></div>
+    <div class="hero-content display-table">
+      <div class="table-cell">
+        <div class="container">
+          <h2 class="hero-title mb-4">{{ proyecto.title }}</h2>
+          <ol class="breadcrumb d-flex justify-content-center">
+            <li class="breadcrumb-item">
+              <a href="{% url 'portafolio' proyecto.autor.id %}">Home</a>
+            </li>
+            <li class="breadcrumb-item active">Detalles de proyecto</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <main id="main">
+
+    <!-- ======= Portfolio Details Section ======= -->
+    <section id="portfolio-details" class="portfolio-details">
+      <div class="container">
+
+        <div class="row gy-4">
+
+          <div class="col-lg-6">
+            <div class="portfolio-details-slider swiper">
+              <div class="swiper-wrapper align-items-center">
+                {% if proyecto.foto_url %}
+                    <div class="swiper-slides">
+                        <img src="{{ proyecto.foto_url }}" alt="" class="img-fluid" style="width: 600px; height: 450px;" >
+                    </div>
+                {% elif proyecto.foto_img %}
+                    <div class="swiper-slides card" >
+                        <img src="{{ proyecto.foto_img.url }}" alt="" class="img-fluid" style="width: 600px; height: 450px;">
+                    </div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-6">
+            <div class="portfolio-info">
+              <h3>Información del proyecto</h3>
+              <ul>
+                <li><strong>Titulo</strong>: {{ proyecto.title }}</li>
+                <li><strong>Categoria</strong>: {{ proyecto.tags }}</li>
+                <li><strong>Proyecto URL</strong>: <a href="{{ proyecto.git }}" target="_blank">Link a Github</a></li>
+              </ul>
+            </div>
+            <div class="portfolio-description">
+              <h2>Descripción del proyecto:</h2>
+              <p>
+                {{ proyecto.descripcion }}
+              </p>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section><!-- End Portfolio Details Section -->
+
+  </main><!-- End #main -->
+{% endblock %}

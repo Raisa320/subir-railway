@@ -2,6 +2,9 @@ from django.db import models
 from django.contrib.auth.models import User
 from PIL import Image
 from django.urls  import reverse
+from io import BytesIO
+from django.core.files.base import ContentFile
+from django.core.files.storage import default_storage as storage   
 # Create your models here.
 
 
@@ -31,11 +34,24 @@ class Proyecto(models.Model):
     def get_absolute_url(self):
         return reverse("proyecto-ver", kwargs={"pk": self.pk})
 
-    def save(self):
-        super().save()
+    def save(self,*args, **kwargs):
+        super(Proyecto,self).save(*args, **kwargs)
         if self.foto_img:
-            foto_img = Image.open(self.foto_img.path)
-            if foto_img.height > 300 or foto_img.width > 300:
-                output_size = (300, 300)
-                foto_img.thumbnail(output_size)
-                foto_img.save(self.foto_img.path)
+            # After save, read the file
+            image_read = storage.open(self.foto_img.name, "r")
+            image = Image.open(image_read)
+            if image.height > 300 or image.width > 300:
+                size = 300, 300
+                # Create a buffer to hold the bytes
+                imageBuffer = BytesIO()
+                # Resize  
+                image.thumbnail(size, Image.ANTIALIAS)
+                # Save the image as jpeg to the buffer
+                image.save(imageBuffer, image.format)
+                # Save the modified image
+                proyecto = Proyecto.objects.get(pk=self.pk)
+                proyecto.foto_img.save(self.foto_img.name, ContentFile(imageBuffer.getvalue()))
+
+                image_read = storage.open(proyecto.foto_img.name, "r")
+                image = Image.open(image_read)
+            image_read.close()

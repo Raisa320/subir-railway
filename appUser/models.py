@@ -32,7 +32,8 @@ class Profile(models.Model):
 
     def save(self, *args, **kwargs):
         super(Profile,self).save(*args, **kwargs)
-        if self.image:
+        print(self.image)
+        if self.image!="default.jpg":
             # After save, read the file
             image_read = storage.open(self.image.name, "r")
             image = Image.open(image_read)

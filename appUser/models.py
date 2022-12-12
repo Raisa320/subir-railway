@@ -1,6 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import User
 from PIL import Image
+from io import BytesIO
+from django.core.files.base import ContentFile
+from django.core.files.storage import default_storage as storage    
 
 # Create your models here.
 class Profile(models.Model):
@@ -30,11 +33,24 @@ class Profile(models.Model):
     def save(self, *args, **kwargs):
         super(Profile,self).save(*args, **kwargs)
         if self.image:
-            img = Image.open(self.image.path)
-            if img.height > 300 or img.width > 300:
-                output_size = (300, 300)
-                img.thumbnail(output_size)
-                img.save(self.image.path)
+            # After save, read the file
+            image_read = storage.open(self.image.name, "r")
+            image = Image.open(image_read)
+            if image.height > 300 or image.width > 300:
+                size = 300, 300
+                # Create a buffer to hold the bytes
+                imageBuffer = BytesIO()
+                # Resize  
+                image.thumbnail(size, Image.ANTIALIAS)
+                # Save the image as jpeg to the buffer
+                image.save(imageBuffer, image.format)
+                # Save the modified image
+                user = User.objects.get(pk=self.pk)
+                user.profile.image.save(self.image.name, ContentFile(imageBuffer.getvalue()))
+
+                image_read = storage.open(user.profile.image.name, "r")
+                image = Image.open(image_read)
+            image_read.close()
 
 
 

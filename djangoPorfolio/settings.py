@@ -123,7 +123,8 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
-
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+STATIC_ROOT =os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = 'static/'
 
 # Default primary key field type
@@ -140,5 +141,5 @@ LOGIN_REDIRECT_URL='home-page'
 LOGIN_URL='login-page'
 #LOGOUT_REDIRECT_URL='login-page'
 
-ALLOWED_HOSTS = ['fc1d-181-67-205-182.ngrok.io', 'localhost','127.0.0.1']
+ALLOWED_HOSTS = ['*']
 #CSRF_TRUSTED_ORIGINS = ['https://0517-181-67-205-182.sa.ngrok.io']
